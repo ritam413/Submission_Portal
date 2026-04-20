@@ -2,7 +2,10 @@
 
 import { FormEvent, useCallback, useMemo, useState, useSyncExternalStore } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-
+import { useQuery } from "tanstack/react-query"
+import { useQueryClient } from "@tanstack/react-query";
+import { AuthUser } from "../types/auth.types";
+import { useAuthUser } from "../querryProvider/userQuerry";
 type SessionUser = {
   id: string;
   email: string;
@@ -59,7 +62,7 @@ function getStoredSessionUser(): SessionUser | null {
 
 function subscribeToAuthSession(onStoreChange: () => void): () => void {
   if (typeof window === "undefined") {
-    return () => {};
+    return () => { };
   }
 
   const onStorage = (event: StorageEvent) => {
@@ -80,6 +83,7 @@ function subscribeToAuthSession(onStoreChange: () => void): () => void {
 }
 
 export function EventRegistrationForm() {
+  const queryClient = useQueryClient()
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isAuthorizing, setIsAuthorizing] = useState(false);
@@ -116,6 +120,8 @@ export function EventRegistrationForm() {
     const userId = searchParams.get("userId");
     const secret = searchParams.get("secret");
 
+
+
     if (!userId || !secret || typeof window === "undefined") {
       return;
     }
@@ -142,17 +148,57 @@ export function EventRegistrationForm() {
       }
 
       const sessionData = json.data;
-      
+
       window.localStorage.setItem(AUTH_JWT_STORAGE_KEY, sessionData.jwt);
       window.localStorage.setItem(`${AUTH_JWT_STORAGE_KEY}:userId`, sessionData.user.id);
       window.localStorage.setItem(`${AUTH_JWT_STORAGE_KEY}:email`, sessionData.user.email);
       window.localStorage.setItem(`${AUTH_JWT_STORAGE_KEY}:name`, sessionData.user.name);
+
+      queryClient.setQueryData(["authUser"], {
+        id: sessionData.user.id,
+        email: sessionData.user.email,
+        name: sessionData.user.name,
+        teamName:"",
+        isRegistered: false,
+      })
+
+      try {
+        const assignedTeam = await fetch("/api/auth/check-user", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: sessionData.user.email })
+        })
+
+        const response = await assignedTeam.json()
+
+        if (response.success && response.user) {
+          const fullUser = response.user
+          console.log("User already has team assignment:", fullUser);
+          window.localStorage.setItem(`${AUTH_JWT_STORAGE_KEY}:teamName`, fullUser.teamName);
+          window.localStorage.setItem(`${AUTH_JWT_STORAGE_KEY}:role`, fullUser.role);
+          window.localStorage.setItem(`${AUTH_JWT_STORAGE_KEY}:teamId`, fullUser.teamId);
+          window.localStorage.setItem(`${AUTH_JWT_STORAGE_KEY}:isRegistered`, "true");
+
+          queryClient.setQueryData<AuthUser | null>(["authUser"],fullUser)
+
+          window.dispatchEvent(new Event(AUTH_SESSION_CHANGED_EVENT));
+          router.replace("/")
+          return;
+        }
+
+      } catch (err) {
+        console.error("Error checking user team assignment:", err);
+      }
+
       window.dispatchEvent(new Event(AUTH_SESSION_CHANGED_EVENT));
       setFormValues((prev) => ({
         ...prev,
         name: prev.name || sessionData.user.name,
         gmail: prev.gmail || sessionData.user.email,
       }));
+
+
+
       router.replace("/register");
     } catch (exchangeError) {
       const message =
@@ -206,6 +252,7 @@ export function EventRegistrationForm() {
             role?: "LEADER" | "MEMBER" | null;
             teamId?: string | null;
             isRegistered?: boolean;
+            teamName?: string | null;
           };
           team?: { teamId?: string; name?: string };
         };
@@ -231,6 +278,28 @@ export function EventRegistrationForm() {
         );
       }
 
+      queryClient.setQueryData<AuthUser | null>(["authUser"], (old: any) => {
+        if (!old) {
+          return {
+            id: "",
+            email: "",
+            name: "",
+            isRegistered: true,
+            role,
+            teamId,
+            teamName:""
+          };
+        }
+
+        return {
+          ...old,
+          isRegistered: true,
+          role,
+          teamId,
+          teamName: json.data?.user?.teamName ?? old.teamName,
+        };
+      });
+
       setSuccessMessage("Registration complete. Redirecting to submission portal...");
       router.push("/submit");
     } catch (submitError) {
@@ -241,6 +310,8 @@ export function EventRegistrationForm() {
       setIsSubmitting(false);
     }
   };
+
+  const { data: user } = useAuthUser()
 
   return (
     <div className="comic-border-sm bg-surface p-6 md:p-10 shadow-[10px_10px_0px_0px_rgba(56,56,51,1)]">

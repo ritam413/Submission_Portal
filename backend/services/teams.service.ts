@@ -431,3 +431,22 @@ export async function assertAdminAccess(userId: string): Promise<void> {
     status: 403,
   });
 }
+
+export async function findUserByEmail(email: string): Promise<UserProfile | null> {
+  const {databases} = createAdminServices()
+
+  const databaseId = appwriteCollectionIds.databaseId()
+  const usersCollection = appwriteCollectionIds.users()
+
+  try{
+    const result = await databases.listDocuments(databaseId, usersCollection,[
+      Query.equal("email", email.trim().toLowerCase()),
+      Query.limit(1)
+    ])
+    const doc = result.documents[0]
+    return doc?mapUserDocument(doc as AppwriteDocument):null
+  }catch (error) {
+    console.error(`Error finding user by email: ${error instanceof Error ? error.message : String(error)}`);
+    return error instanceof Error && error.message.includes("Unknown attribute 'email'") ? null : null;
+  }
+}

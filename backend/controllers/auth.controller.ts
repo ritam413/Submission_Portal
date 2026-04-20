@@ -9,6 +9,8 @@ import { parseEventRegistrationPayload, parseJsonBody } from "@/backend/middlewa
 import { authenticateRequest } from "@/backend/middleware/auth.middleware";
 import {
   ensureTeamForSubmission,
+  findUserByEmail,
+  getTeamById,
   getTeamByName,
   upsertUserMembership,
 } from "@/backend/services/teams.service";
@@ -90,6 +92,26 @@ export async function exchangeOAuthTokenController(request: NextRequest) {
       name: user.name,
     },
   };
+}
+
+export async function checkUser(email:string){
+  const user = await findUserByEmail(email.trim().toLowerCase());
+
+  if(user && user.isRegistered){
+
+    const teamName = user.teamId ? (await getTeamById(user.teamId))?.name : null;
+
+    return {
+      id:user.userId,
+      email:user.email,
+      name:user.displayName,
+      teamId:user.teamId,
+      role:user.role,
+      isRegistered:user.isRegistered,
+      teamName: teamName || null,
+    }
+  }
+  return null;
 }
 
 export async function registerEventController(request: NextRequest) {

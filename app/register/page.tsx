@@ -1,8 +1,12 @@
-import { Suspense } from "react";
+'use client'
+import { Suspense, useEffect } from "react";
 
 import { Footer } from "@/features/core/components/Footer";
 import { Navbar } from "@/features/core/components/Navbar";
 import { EventRegistrationForm } from "@/features/auth/components/EventRegistrationForm";
+import { useAuthUser } from "@/features/auth/querryProvider/userQuerry";
+import { useRouter } from "next/navigation";
+
 
 function EventRegistrationFallback() {
   return (
@@ -14,8 +18,19 @@ function EventRegistrationFallback() {
 
 export default function RegisterPage() {
 
+  const router = useRouter()
+  const { data: user , isLoading } = useAuthUser()
+  useEffect(() => {
+    if (user?.isRegistered) {
+      router.push("/");
+    }
+  }, [user, router]);
 
+  if(isLoading)
+    return <EventRegistrationFallback />
 
+  if(user?.isRegistered)
+    return <p>Redirecting......</p>
   return (
     <>
       <Navbar />
@@ -30,9 +45,14 @@ export default function RegisterPage() {
           <p className="font-body text-on-surface-variant mb-10">
             Sign in with your Google account, then complete your team registration details.
           </p>
-          <Suspense fallback={<EventRegistrationFallback />}>
-            <EventRegistrationForm />
-          </Suspense>
+          {!user && (
+            <p>Please sign in first.</p> // or redirect/login button
+          )}
+          {user && !user.isRegistered && (
+            <Suspense fallback={<EventRegistrationFallback />}>
+              <EventRegistrationForm />
+            </Suspense>
+          )}
         </section>
       </main>
       <Footer />
