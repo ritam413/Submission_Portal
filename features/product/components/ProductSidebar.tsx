@@ -40,6 +40,7 @@ export function ProductSidebar({
   stats,
   repoUrl,
 }: ProductSidebarProps) {
+  const confettiRef = useRef<any>(null);
   const containerRef = useRef<HTMLElement>(null);
   const { mutateAsync: reactToProject, isPending: isVoting } = useProjectReaction();
   const [voteError, setVoteError] = useState<string | null>(null);
@@ -54,7 +55,17 @@ export function ProductSidebar({
     }
   }, []);
 
+   useEffect(() => {
+    // Import confetti once on component mount
+    (async () => {
+      const confettiLib = (await import("@hiseb/confetti")).default;
+      confettiRef.current = confettiLib;
+    })();
+  }, []);
+
   const handleReaction = async (type: (typeof REACTION_BUTTONS)[number]["type"]) => {
+
+
     setVoteError(null);
     try {
       await reactToProject({ projectId, slug, reactionType: type });
@@ -65,8 +76,21 @@ export function ProductSidebar({
     }
   };
 
+   const triggerConfetti = (e: React.MouseEvent) => {
+    if (confettiRef.current) {
+      confettiRef.current({ 
+        position: { x: e.clientX, y: e.clientY },
+        count: 100,
+        size: 1,
+        velocity: 150,
+        fade: false,
+    
+      });
+    }
+  };
+
   return (
-    <aside ref={containerRef} className="w-full lg:w-[420px] space-y-12">
+    <aside ref={containerRef} className="w-full lg:w-[420px] space-y-12 overflow-visible">
       {/* Reaction Station */}
       <section className="bg-white p-10 comic-border">
         <h3 className="font-headline font-black text-2xl text-on-background mb-10 flex items-center gap-3">
@@ -91,9 +115,12 @@ export function ProductSidebar({
             <button
               key={type}
               type="button"
-              onClick={() => void handleReaction(type)}
+              ref={confettiRef}
+              onClick={(e) => {
+                triggerConfetti(e);
+                void handleReaction(type)}}
               disabled={isVoting}
-              className="flex items-center justify-center gap-2 bg-white text-on-background hover:bg-on-background hover:text-white border-2 border-on-background py-5 font-headline font-black tabular-nums text-lg transition-colors"
+              className="confetti-Btn flex items-center justify-center gap-2 bg-white text-on-background hover:bg-on-background hover:text-white border-2 border-on-background py-5 font-headline font-black tabular-nums text-lg transition-colors cursor-pointer"
             >
               <span aria-hidden>{emoji}</span>
               <span>{stats[type]}</span>
@@ -116,7 +143,7 @@ export function ProductSidebar({
             ENTER THE VOID
           </Link>
         </div>
-        
+
         {repoUrl && (
           <a href={repoUrl} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between bg-on-background text-white p-6 border-2 border-on-background hover:bg-primary transition-colors group">
             <div className="flex items-center gap-3">
