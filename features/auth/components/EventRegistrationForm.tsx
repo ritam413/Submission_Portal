@@ -2,16 +2,24 @@
 
 import { FormEvent, useCallback, useMemo, useState, useSyncExternalStore } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useQuery } from "tanstack/react-query"
+  
 import { useQueryClient } from "@tanstack/react-query";
-import { AuthUser } from "../types/auth.types";
+
 import { useAuthUser } from "../querryProvider/userQuerry";
 type SessionUser = {
   id: string;
   email: string;
   name: string;
 };
-
+type AuthUser = {
+  id: string;
+  email: string;
+  name: string;
+  isRegistered: boolean;
+  role?: "LEADER" | "MEMBER" | null;  // ✅ allow null
+  teamId?: string | null;   
+  teamName?: string | null;          // ✅ allow null
+};
 type RegistrationFormValues = {
   name: string;
   teamName: string;
