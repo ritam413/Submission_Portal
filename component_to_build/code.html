@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en" style=""><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&amp;family=Manrope:wght@200..800&amp;family=Plus+Jakarta+Sans:wght@200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary-dim": "#00626e",
+                    "surface-container-low": "#fcf9f1",
+                    "tertiary-fixed-dim": "#00d4ec",
+                    "on-tertiary": "#ffffff",
+                    "secondary": "#805f00",
+                    "on-secondary": "#ffffff",
+                    "surface-container-lowest": "#ffffff",
+                    "on-surface": "#383833",
+                    "secondary-dim": "#715400",
+                    "surface-container": "#f6f3eb",
+                    "primary-fixed": "#ff7767",
+                    "on-error-container": "#510017",
+                    "outline": "#82807b",
+                    "secondary-fixed-dim": "#f7ba00",
+                    "error-container": "#f74b6d",
+                    "secondary-container": "#ffca4d",
+                    "on-secondary-fixed": "#443100",
+                    "primary": "#ba3127",
+                    "on-tertiary-fixed-variant": "#005762",
+                    "surface-dim": "#e5e2d9",
+                    "on-primary-container": "#4f0001",
+                    "primary-fixed-dim": "#fa6050",
+                    "on-secondary-container": "#5c4400",
+                    "error": "#c12048",
+                    "inverse-surface": "#0e0e0b",
+                    "on-primary-fixed": "#000000",
+                    "on-tertiary-container": "#004d57",
+                    "on-primary": "#ffffff",
+                    "on-background": "#383833",
+                    "surface-bright": "#ffffff",
+                    "on-tertiary-fixed": "#003840",
+                    "surface-tint": "#ba3127",
+                    "inverse-primary": "#fe6252",
+                    "on-secondary-fixed-variant": "#674c00",
+                    "on-primary-fixed-variant": "#610002",
+                    "on-error": "#ffffff",
+                    "on-surface-variant": "#65645f",
+                    "error-dim": "#a70138",
+                    "outline-variant": "#bbb9b3",
+                    "surface": "#ffffff",
+                    "secondary-fixed": "#ffca4d",
+                    "primary-dim": "#a9251c",
+                    "surface-variant": "#ebe8df",
+                    "tertiary": "#006f7c",
+                    "inverse-on-surface": "#9f9d97",
+                    "surface-container-high": "#f0eee5",
+                    "primary-container": "#ff7767",
+                    "tertiary-container": "#00e3fd",
+                    "tertiary-fixed": "#00e3fd",
+                    "surface-container-highest": "#ebe8df",
+                    "background": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "fontFamily": {
+                    "headline": ["Space Grotesk"],
+                    "body": ["Manrope"],
+                    "label": ["Plus Jakarta Sans"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .comic-border {
+            box-shadow: 6px 6px 0px 0px #383833;
+            border: 3px solid #383833;
+        }
+        .neo-zine-shadow {
+            box-shadow: 8px 8px 0px 0px rgba(186, 49, 39, 1);
+        }
+        .text-outline-thin {
+            -webkit-text-stroke: 1px #383833;
+        }
+    </style>
+<style>.custom-scrollbar::-webkit-scrollbar {
+    width: 16px
+    }
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: #f6f3eb;
+    border-left: 3px solid #383833
+    }
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #ba3127;
+    border: 3px solid #383833;
+    background-image: url(https://lh3.googleusercontent.com/aida/ADBb0uiSKn7bDvBxDbjuU5u_bA06byG8kP27gslWj6yh4Q0F6-3qedS1cfvarSKW8_NYykcsK07Ierb7F6j9i3Hl-32lqbl16uvPBtg9tUQ8DsbY0C_bXW2rAvKha-jTLJKe8NUw4aXfL5O8_M_wNHwMONUmDdT_EDW6BEZw_3O4baFtx_C5nB-mKy6ndPe12CTYTTnnpYh8xiofdyyibtMzoTcce_xbm88apo5WnO8bBkxMampzVi07jaKTHkVpAFXT5mjJuQ-oPbtIhQ);
+    background-size: cover
+    }
+/* Firefox support */
+.custom-scrollbar {
+    scrollbar-width: auto;
+    scrollbar-color: #ba3127 #f6f3eb
+    }</style></head>
+<body class="text-on-background font-body min-h-screen bg-white">
+<!-- TopNavBar -->
+<main class="max-w-[1440px] mx-auto px-8 py-16">
+<div class="flex flex-col lg:flex-row gap-16">
+<!-- Main Content Area -->
+<div class="flex-1 space-y-12">
+<!-- Hero Section -->
+<section>
+<div class="bg-surface-container p-12 comic-border">
+<h1 class="font-headline font-black text-6xl md:text-8xl text-primary uppercase leading-[0.85] tracking-tighter mb-8 lg:text-7xl" style="transform: skew(-2deg);">
+                            CHROMA<br/></h1>
+<div class="flex items-center gap-4 pt-4">
+<span class="font-label font-black text-xl text-secondary uppercase tracking-tight" style="">BY TEAM VAPORWAVE GHOST</span>
+</div>
+</div>
+</section>
+<!-- Unified Media Section -->
+<section class="space-y-12">
+<div class="bg-white comic-border p-4">
+<!-- Focused Video Player -->
+<div class="bg-on-background overflow-hidden relative aspect-video border-b-4 border-on-background mb-4">
+<img alt="Demo" class="absolute inset-0 w-full h-full object-cover opacity-80" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD0Bg3AsBHkoac2VlLzFXI-Kt5zRa4uLIxhQTsIXV0cxR8pfvleqbHyBZVOeZnYrT8avoKfV1hnZOShhrGbmrZiTdfGUkmi40miFVzbeENEu-Y0NclrJPUkU6-AciN0DxZD6AO7QMaDkLPkjSEhEF_r4vM4fX2pLVJL0MYZszwcIe1xnaDzwvrlkcj3YdBjZMT068p0IwbsYZQ-bGIp5gW06KwcJGMwxq7a7Y01LL7RVSgbOyUE8t_ij-hIlQCDErsySXjSIeL1PR0" style=""/>
+<div class="relative z-10 flex flex-col items-center justify-center h-full gap-6">
+<button class="bg-primary hover:bg-primary-dim w-28 h-28 rounded-full flex items-center justify-center border-4 border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:scale-105 transition-transform" style="">
+<span class="material-symbols-outlined text-white text-6xl translate-x-1" style="">play_arrow</span>
+</button>
+<span class="font-headline font-black text-on-background bg-white px-6 py-3 uppercase tracking-widest text-sm border-2 border-on-background" style="">WATCH_DEMO.EXE</span>
+</div>
+</div>
+<!-- Thumbnail Gallery -->
+<div class="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-4">
+<!-- Thumbnail 1 (Video Preview) -->
+<div class="aspect-square border-4 border-primary relative cursor-pointer hover:opacity-80 transition-opacity">
+<img alt="Thumbnail 1" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD0Bg3AsBHkoac2VlLzFXI-Kt5zRa4uLIxhQTsIXV0cxR8pfvleqbHyBZVOeZnYrT8avoKfV1hnZOShhrGbmrZiTdfGUkmi40miFVzbeENEu-Y0NclrJPUkU6-AciN0DxZD6AO7QMaDkLPkjSEhEF_r4vM4fX2pLVJL0MYZszwcIe1xnaDzwvrlkcj3YdBjZMT068p0IwbsYZQ-bGIp5gW06KwcJGMwxq7a7Y01LL7RVSgbOyUE8t_ij-hIlQCDErsySXjSIeL1PR0" style=""/>
+<div class="absolute inset-0 flex items-center justify-center bg-primary/20">
+<span class="material-symbols-outlined text-white text-2xl" style="">play_circle</span>
+</div>
+</div>
+<!-- Thumbnail 2 (Pulse Reaction) -->
+<div class="aspect-square border-2 border-on-background cursor-pointer hover:border-primary transition-colors">
+<img alt="Pulse Reaction" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA2Jrq-KJ4zwoP-r2CnQ1l9BHn0eowi0zWULlA8jsy5soFRC9Mkbl8QgB55zjh9HHZZUsvxECnQtTxbxJNXfNjW2jG4FNoZt-GGRZi3m8pVgpdzMv_GpE03ScZGL93MhZKhuNn1NXrbY_LojSSOGuLvcsz90aSUAdbyV0de_1Z0J9Zb04w7YYMwknvjmh9EVwiF01ZSUu_rmwmBF0tLWxxPRW2UZ_fcAvb6E2x3DNNMsKuZ8tQaYk6Lnhq1ho-rq5XJFXknTlgPqHg" style=""/>
+</div>
+<!-- Thumbnail 3 (Void Walker) -->
+<div class="aspect-square border-2 border-on-background cursor-pointer hover:border-primary transition-colors">
+<img alt="Void Walker" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4KEeFtGUvEJ--oaRPlHa0S09-qqeSOc0qoFGKLA55toTGclEJmIHCtf5fr4u2fYw77JpFDZ0eWG4ntpPtiTseVjMLGSaR-0a38d2CfskIJNnEv2IvGg86_W06Gg0XXSUWL03tCnH3r4PIAwlcFCNDUW_6Uz_dzJd6OEbEpbjHADsv5uyBcZA9sOMfMFil0-0jEuFE1WhYj4uOYtPVP-UM1gAfgBOIt8YQRg9eoFC78k7ArOvjsSxOM_jYCpzoVjhVY0kq9TKxL34" style=""/>
+</div>
+<!-- Extra Placeholder Thumbnail -->
+<div class="aspect-square border-2 border-on-background bg-surface-variant flex items-center justify-center cursor-pointer hover:bg-outline-variant transition-colors">
+<span class="font-headline font-black text-sm" style="">3+</span>
+</div>
+</div>
+</div>
+<!-- Description Section (Moved under Media) -->
+<div class="bg-surface-container p-8 comic-border border-secondary border-t-8 w-full custom-scrollbar" style="height: 320px; overflow-y: auto;">
+<h4 class="font-headline font-black text-sm uppercase mb-6 tracking-widest text-secondary flex items-center gap-2" style="">
+ LOG_DESCRIPTION
+                        </h4>
+<div class="font-body font-bold text-base leading-relaxed space-y-6 text-on-background/80">
+<p class="" style="">Chroma Synthetic is a hyper-sensory exploration of digital decay and generative synthesis. Built during the 48-hour Chaos Cycle, this project utilizes custom Three.js shaders to visualize audio frequencies in a non-Euclidean 3D space.</p>
+<p class="" style="">The interface utilizes a "Neo-Zine" framework, bridging the gap between tactile 90s print media and modern low-latency web interactions.The interface utilizes a "Neo-Zine" framework, bridging the gap between tactile 90s print media and modern low-latency web interactions.The interface utilizes a "Neo-Zine" framework, bridging the gap between tactile 90s print media and modern low-latency web interactions.The interface utilizes a "Neo-Zine" framework, bridging the gap between tactile 90s print media and modern low-latency web interactions.The interface utilizes a "Neo-Zine" framework, bridging the gap between tactile 90s print media and modern low-latency web interactions.The interface utilizes a "Neo-Zine" framework, bridging the gap between tactile 90s print media and modern low-latency web interactions.</p>
+</div>
+</div>
+</section>
+</div>
+<!-- Sidebar -->
+<aside class="w-full lg:w-[420px] space-y-12">
+<!-- Reaction Station -->
+<section class="bg-white p-10 comic-border">
+<h3 class="font-headline font-black text-2xl text-on-background mb-10 flex items-center gap-3" style="">
+<span class="material-symbols-outlined text-primary" style="">analytics</span> REACTION STATION
+                    </h3>
+<div class="space-y-10">
+<div class="space-y-3">
+<div class="flex justify-between font-label font-black text-xs uppercase tracking-tighter">
+<span class="" style=""><br/></span>
+<span class="text-primary" style="">%</span>
+</div>
+<div class="h-4 bg-surface-container border-2 border-on-background relative overflow-hidden">
+<div class="absolute top-0 left-0 h-full bg-primary" style="width: 88%"></div>
+</div>
+</div>
+<div class="space-y-3">
+<div class="flex justify-between font-label font-black text-xs uppercase tracking-tighter">
+<span class="" style=""><br/></span>
+<span class="text-secondary" style=""><br/></span>
+</div>
+<div class="h-4 bg-surface-container border-2 border-on-background relative overflow-hidden">
+<div class="absolute top-0 left-0 h-full bg-secondary" style="width: 72%"></div>
+</div>
+</div>
+<div class="space-y-3">
+<div class="flex justify-between font-label font-black text-xs uppercase tracking-tighter">
+<span class="" style=""><br/></span>
+<span class="text-tertiary" style=""><br/></span>
+</div>
+<div class="h-4 bg-surface-container border-2 border-on-background relative overflow-hidden">
+<div class="absolute top-0 left-0 h-full bg-tertiary" style="width: 95%"></div>
+</div>
+</div>
+</div>
+<div class="mt-12 grid grid-cols-2 gap-4">
+<button class="bg-white hover:bg-on-background hover:text-white border-2 border-on-background py-5 font-headline font-black uppercase text-sm transition-colors" style="">🤘 Radical</button>
+<button class="bg-white hover:bg-on-background hover:text-white border-2 border-on-background py-5 font-headline font-black uppercase text-sm transition-colors" style="">✨ Vibrant</button>
+<button class="bg-white hover:bg-on-background hover:text-white border-2 border-on-background py-5 font-headline font-black uppercase text-sm transition-colors" style="">🌀 Complex</button>
+<button class="bg-white hover:bg-on-background hover:text-white border-2 border-on-background py-5 font-headline font-black uppercase text-sm transition-colors" style="">💀 Deadly</button>
+</div>
+</section>
+<!-- Unified Action Area -->
+<div class="space-y-4">
+<div class="bg-primary p-8 comic-border text-white text-center space-y-6">
+<div class="space-y-1">
+<p class="font-headline font-black text-xs tracking-[0.2em] uppercase opacity-70" style="">SYSTEM_DEPLOYED</p>
+<h2 class="font-headline font-black text-5xl uppercase leading-none tracking-tighter" style="">LAUNCH</h2>
+</div>
+<button class="w-full bg-white text-primary py-4 font-headline font-black text-lg uppercase hover:scale-[1.02] transition-transform border-2 border-on-background" style="">
+                            ENTER THE VOID
+                        </button>
+</div>
+<a class="flex items-center justify-between bg-on-background text-white p-6 border-2 border-on-background hover:bg-primary transition-colors group" href="#" style="">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined" style="">terminal</span>
+<span class="font-headline font-black text-sm uppercase" style="">VIEW_REPOSITORY</span>
+</div>
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform" style="">east</span>
+</a>
+</div>
+</aside>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-on-background w-full mt-32 p-12 border-t-[12px] border-primary">
+<div class="flex flex-col md:flex-row justify-between items-center gap-10 w-full max-w-[1440px] mx-auto">
+<div class="font-headline font-black text-primary text-3xl italic" style="">VIBETHON</div>
+<div class="font-body font-black text-[10px] uppercase tracking-[0.3em] text-white/40" style="">
+                © 2024 NEO-ZINE ARCHIVE PROTOCOL
+            </div>
+<div class="flex gap-10">
+<a class="font-body font-black text-[10px] uppercase tracking-widest text-white/60 hover:text-primary transition-colors" href="#" style="">TERMS</a>
+<a class="font-body font-black text-[10px] uppercase tracking-widest text-white/60 hover:text-primary transition-colors" href="#" style="">PRIVACY</a>
+<a class="font-body font-black text-[10px] uppercase tracking-widest text-white/60 hover:text-primary transition-colors" href="#" style="">SUPPORT</a>
+</div>
+</div>
+</footer>
+</body></html>

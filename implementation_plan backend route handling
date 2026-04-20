@@ -1,0 +1,41 @@
+# Wire Next.js API Route Handlers
+
+This plan sets up the Next.js App Router API endpoints by importing the previously built backend route adapters and exporting them as standard Next.js route handlers (`GET`, `POST`, etc.). It also updates the dependencies by installing the required `server-only` package and provides an environment variables template.
+
+## Proposed Changes
+
+### Dependency Updates
+
+- **Install `server-only`**: The `server-only` package is required by the `backend/config/` modules but is missing from `package.json`.
+
+#### [NEW] `c:\download\ship_or_shink\.env.example`
+Create an environment template with keys derived from `backend/config/env.config.ts`.
+
+### API Route Handlers
+
+#### [NEW] `c:\download\ship_or_shink\app\api\projects\route.ts`
+- Export `handleGetProjects` as `GET`
+- Export `handlePostProjects` as `POST`
+
+#### [NEW] `c:\download\ship_or_shink\app\api\projects\[projectIdOrSlug]\route.ts`
+- Export `handleGetProjectDetail` as `GET`
+
+#### [NEW] `c:\download\ship_or_shink\app\api\projects\[projectId]\stats\route.ts`
+- Export `handleGetProjectStats` as `GET`
+
+#### [NEW] `c:\download\ship_or_shink\app\api\projects\[projectId]\reactions\route.ts`
+- Export `handlePostReactions` as `POST`
+
+#### [NEW] `c:\download\ship_or_shink\app\api\votes\route.ts`
+- Export `handlePostVotes` as `POST`
+
+#### [NEW] `c:\download\ship_or_shink\app\api\assignments\me\route.ts`
+- Export `handleGetMyAssignments` as `GET`
+
+#### [NEW] `c:\download\ship_or_shink\app\api\assignments\generate\route.ts`
+- Export `handlePostGenerateAssignments` as `POST`
+
+## Verification Plan
+1. Ensure the `server-only` dependency is successfully installed.
+2. Ensure the `.env.example` is created with the required Appwrite and application configuration keys.
+3. Validate that the TypeScript compiler (`next build` / `tsc`) does not throw any errors for the newly created route handlers.
