@@ -16,13 +16,13 @@
     "@hiseb/confetti": "^2.1.0",
     "@tanstack/react-query": "^5.99.2",
     "dotenv": "^17.4.2",
-    "fslightbox-react": "^2.0.3",
     "gsap": "^3.15.0",
     "next": "16.2.4",
     "node-appwrite": "^24.0.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "server-only": "^0.0.1"
+    "server-only": "^0.0.1",
+    "yet-another-react-lightbox": "^3.31.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
