@@ -6,6 +6,8 @@ import { VisualPayloadDropzone } from "./VisualPayloadDropzone";
 import { ProjectDescriptionForm } from "./ProjectDescriptionForm";
 import { IdentityConceptForm } from "./IdentityConceptForm";
 import { ExternalLinksForm } from "./ExternalLinksForm";
+import { useVisualPayload } from "../../../hooks/useVisualPayload";
+import { useAuthUser } from "@/features/auth/querryProvider/userQuerry";
 
 const AUTH_JWT_STORAGE_KEY = "event_auth_jwt";
 
@@ -14,32 +16,39 @@ export function SubmissionForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
+
+  const { selectedFiles } = useVisualPayload();
+  const { data: user } = useAuthUser();
+
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSubmitError(null);
     setIsSubmitting(true);
-    
+
     try {
       // 1. Gather all form data
       const formData = new FormData(e.currentTarget);
-      const payload = Object.fromEntries(formData.entries());
-      
-      // We also handle the file from visualPayload Dropzone
-      const file = formData.get("visualPayload");
-      if (file instanceof File && file.size > 0) {
-        console.log("File attached:", file.name, "Size:", file.size);
-      }
-      
-      console.log("Submitting Project Data:", payload);
 
-      const jwt = window.localStorage.getItem(AUTH_JWT_STORAGE_KEY);
+      formData.delete("visualPayload"); // Remove any existing visualPayload e
+      // ntry to avoid duplicates
+      selectedFiles.forEach((file) => formData.append("visualPayload", file));
+
+      console.log("Files being Submitted: ", selectedFiles.length)
+      selectedFiles.forEach((file, index) => {
+        console.log(`File ${index + 1}: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`);
+      })
+
+
+      const jwt = localStorage.getItem(AUTH_JWT_STORAGE_KEY);
       if (!jwt) {
-        throw new Error("Please sign in and complete registration before submitting.");
+        throw new Error("User is not authenticated. Please log in .");
       }
 
-      const role = window.localStorage.getItem(`${AUTH_JWT_STORAGE_KEY}:role`);
-      if (role !== "LEADER") {
-        throw new Error("Only team leaders can upload a project.");
+      const LEADER = user?.role === "LEADER"
+
+      if (!LEADER) {
+        throw new Error("Only team leaders can submit projects. Please contact your team leader.");
       }
 
       const response = await fetch("/api/submit", {
@@ -59,7 +68,7 @@ export function SubmissionForm() {
       if (!response.ok || !json.success) {
         throw new Error(json.error?.message ?? "Submission failed");
       }
-      
+
       const slug = json.data?.slug?.trim();
       if (slug) {
         router.push(`/gallery/${encodeURIComponent(slug)}`);
@@ -80,15 +89,16 @@ export function SubmissionForm() {
     <form onSubmit={handleSubmit} className="flex flex-col lg:flex-row gap-12 items-start">
       {/* Left Side (60%): Visual Payload */}
       <div className="w-full lg:w-[60%] space-y-8">
+        {/* No props needed! VisualPayloadDropzone uses hook directly */}
         <VisualPayloadDropzone />
         <ProjectDescriptionForm />
       </div>
-      
+
       {/* Right Side (40%): Form Fields and CTA */}
       <div className="w-full lg:w-[40%] space-y-10">
         <IdentityConceptForm />
         <ExternalLinksForm />
-        
+
         {/* CTA Section */}
         <div className="pt-6">
           <button
