@@ -1,13 +1,15 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export default function AuthCallbackPage() {
   const router = useRouter();
-  const params = useSearchParams();
 
   useEffect(() => {
+    // Avoid Next.js client navigation hooks like `useSearchParams` here so
+    // the page doesn't require a Suspense boundary during prerender.
+    const params = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "");
     const userId = params.get("userId");
     const secret = params.get("secret");
 
@@ -31,7 +33,9 @@ export default function AuthCallbackPage() {
     } else {
       router.replace(next);
     }
-  }, [params, router]);
+    // run once on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router]);
 
   return <div>Signing you in…</div>;
 }
