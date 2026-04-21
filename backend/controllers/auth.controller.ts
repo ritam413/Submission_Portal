@@ -38,10 +38,11 @@ function normalizeNextPath(nextPath: string | null): string {
 
 export async function startGoogleOAuthController(request: NextRequest) {
   const account = createPublicAccount();
-  const nextPath = normalizeNextPath(request.nextUrl.searchParams.get("next"));
   const baseUrl = getBaseUrl(request);
-  const successUrl = `${baseUrl}${nextPath}`;
-  const failureUrl = `${baseUrl}${nextPath}?auth=failed`;
+  // Use fixed callback URLs so Appwrite sees an exact whitelisted domain.
+  // Do NOT include dynamic paths or query params here.
+  const successUrl = `${baseUrl}/auth/callback`;
+  const failureUrl = `${baseUrl}/auth/error`;
   const redirectUrl = await account.createOAuth2Token({
     provider: OAuthProvider.Google,
     success: successUrl,

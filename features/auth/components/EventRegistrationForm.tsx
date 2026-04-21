@@ -121,7 +121,15 @@ export function EventRegistrationForm() {
 
   const beginGoogleSignIn = () => {
     setError(null);
-    window.location.href = "/api/auth/google?next=/register";
+    if (typeof window !== "undefined") {
+      // Save intended post-login path in localStorage so callback can restore it.
+      try {
+        window.localStorage.setItem("oauth_next", "/register");
+      } catch (err) {
+        // ignore storage errors
+      }
+      window.location.href = "/api/auth/google";
+    }
   };
 
   const exchangeOAuthToken = useCallback(async () => {
