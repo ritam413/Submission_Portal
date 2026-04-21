@@ -1,65 +1,108 @@
 "use client";
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import FsLightbox from "fslightbox-react";
+import Lightbox from "yet-another-react-lightbox";
+import Video from "yet-another-react-lightbox/plugins/video";
+import "yet-another-react-lightbox/styles.css";
 import gsap from "gsap";
 
-/**
- * ProductMedia.tsx
- * Purpose: Handles the presentation of the main video, thumbnail gallery, and the long description text.
- * Props: videoUrl (string), thumbnailUrls (string[]), description (string)
- * Backend Integration: Renders media assets whose URLs are provided via the TanStack Query data. 
- * State: Maintains `activeMedia` for swapping what's viewed in the main player.
- */
 interface ProductMediaProps {
-  videoUrl?: string;
-  thumbnailUrls: string[];
+  videoUrl?: string | File;
+  thumbnailUrls: Array<string | File>;
   mediaKinds?: Array<"image" | "video" | "unknown">;
   description: string;
 }
 
+
+// NOTE: Appwrite direct URLs are proxied through `/api/proxy-file`.
+
+
 export function ProductMedia({ videoUrl, thumbnailUrls, mediaKinds, description }: ProductMediaProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const mediaSources = useMemo(() => {
-    const sources = [videoUrl, ...thumbnailUrls]
-      .map((source) => source?.trim())
-      .filter((source): source is string => Boolean(source));
-
-    return Array.from(new Set(sources));
-  }, [thumbnailUrls, videoUrl]);
+  const createdObjectUrlsRef = useRef<string[]>([]);
 
   const [selectedMedia, setSelectedMedia] = useState<string | null>(null);
-  const [lightboxToggler, setLightboxToggler] = useState(false);
-  const [lightboxSlide, setLightboxSlide] = useState(1);
+  const [open, setOpen] = useState(false);
+  const [index, setIndex] = useState(0);
+
+
+  const resolved = useMemo(() => {
+    createdObjectUrlsRef.current.forEach(u => URL.revokeObjectURL(u));
+    createdObjectUrlsRef.current.length = 0;
+    const buildAppwriteViewUrl = (bucketId: string, fileId: string) =>
+      `/api/proxy-file?bucketId=${encodeURIComponent(bucketId)}&fileId=${encodeURIComponent(fileId)}`;
+
+    // inside useMemo
+    const toUrl = (v?: string | File | { bucketId: string; fileId: string } | null) => {
+      console.log("toUrl input:", v, "type:", typeof v, "isFile:", v instanceof File);
+
+      if (!v) return null;
+
+      // Local File -> blob URL
+      if (v instanceof File) {
+        const obj = URL.createObjectURL(v);
+        createdObjectUrlsRef.current.push(obj);
+        console.log("created blob URL:", obj);
+        return obj;
+      }
+
+      // Full absolute URL string
+      if (typeof v === "string" && /^https?:\/\//i.test(v)) {
+        console.log("using absolute URL:", v.trim());
+        return v.trim();
+      }
+
+      // Appwrite file reference object
+      if (typeof v === "object" && v !== null && "bucketId" in v && "fileId" in v) {
+        const url = buildAppwriteViewUrl((v as any).bucketId, (v as any).fileId);
+        console.log("built Appwrite view URL:", url);
+        return url;
+      }
+
+      // fallback for plain string IDs (if you use fileId strings)
+      if (typeof v === "string") {
+        const trimmed = v.trim();
+        console.log("string fallback:", trimmed);
+        return trimmed;
+      }
+
+      return null;
+    };
+
+    const resolvedVideo = toUrl(videoUrl);
+    const resolvedThumbs = thumbnailUrls.map(toUrl);
+
+    const sources = [resolvedVideo, ...resolvedThumbs].filter((s): s is string => Boolean(s)).map(s => s.trim())
+
+    const uniqueSources = Array.from(new Set(sources));
+
+    const kindMap = new Map<string, "image" | "video" | "unknown">();
+    if (resolvedVideo) kindMap.set(resolvedVideo, "video");
+    resolvedThumbs.forEach((r, i) => {
+      if (!r) return;
+      const kind = mediaKinds?.[i] ?? "unknown";
+      const existing = kindMap.get(r);
+      if (!existing || existing === "unknown") kindMap.set(r, kind);
+    });
+
+    return { sources: uniqueSources, kindMap };
+  }, [videoUrl, thumbnailUrls, mediaKinds])
+
+  // expose the resolved list + map to the rest of the component
+  const mediaSources = resolved.sources;
+  const mediaKindBySource = resolved.kindMap;
 
   const activeMedia =
     selectedMedia && mediaSources.includes(selectedMedia)
       ? selectedMedia
       : mediaSources[0] || "";
 
-  const mediaKindBySource = useMemo(() => {
-    const map = new Map<string, "image" | "video" | "unknown">();
-
-    const normalizedVideoUrl = videoUrl?.trim();
-    if (normalizedVideoUrl) {
-      map.set(normalizedVideoUrl, "video");
-    }
-
-    thumbnailUrls.forEach((url, index) => {
-      const normalized = url?.trim();
-      if (!normalized) {
-        return;
-      }
-      const kind = mediaKinds?.[index] ?? "unknown";
-
-      const existing = map.get(normalized);
-      if (!existing || existing === "unknown") {
-        map.set(normalized, kind);
-      }
-    });
-
-    return map;
-  }, [mediaKinds, thumbnailUrls, videoUrl]);
+  useEffect(() => {
+    return () => {
+      createdObjectUrlsRef.current.forEach((u) => URL.revokeObjectURL(u));
+      createdObjectUrlsRef.current.length = 0;
+    };
+  }, []);
 
   const isVideoSource = (source: string): boolean => {
     const kind = mediaKindBySource.get(source);
@@ -102,14 +145,15 @@ export function ProductMedia({ videoUrl, thumbnailUrls, mediaKinds, description 
   };
 
   const openLightboxForSource = (source: string) => {
-    const index = mediaSources.findIndex((entry) => entry === source);
-    if (index < 0) {
-      return;
-    }
+    const idx = mediaSources.findIndex((entry) => entry === source);
+    if (idx < 0) return;
 
-    setLightboxSlide(index + 1);
-    setLightboxToggler((prev) => !prev);
+    setIndex(idx);
+    setOpen(true);
   };
+
+
+
 
   useEffect(() => {
     if (containerRef.current) {
@@ -154,46 +198,49 @@ export function ProductMedia({ videoUrl, thumbnailUrls, mediaKinds, description 
             )
           ) : null}
           <div className="relative z-10 flex flex-col items-center justify-center h-full gap-6">
-            <button className="bg-primary hover:bg-primary-dim w-28 h-28 rounded-full flex items-center justify-center border-4 border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:scale-105 transition-transform">
-              <span className="material-symbols-outlined text-white text-6xl translate-x-1">
-                play_arrow
-              </span>
-            </button>
-            <span className="font-headline font-black text-on-background bg-white px-6 py-3 uppercase tracking-widest text-sm border-2 border-on-background">
-              WATCH_DEMO.EXE
-            </span>
+            {activeMedia && isVideoSource(activeMedia) && (
+              <>
+
+                <button className="bg-primary hover:bg-primary-dim w-28 h-28 rounded-full flex items-center justify-center border-4 border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:scale-105 transition-transform">
+                  <span className="material-symbols-outlined text-white text-6xl translate-x-1">
+                    play_arrow
+                  </span>
+                </button>
+                <span className="font-headline font-black text-on-background bg-white px-6 py-3 uppercase tracking-widest text-sm border-2 border-on-background">
+                  WATCH_DEMO.EXE
+                </span>
+              </>
+            )}
+
           </div>
         </div>
 
         {/* Thumbnail Gallery */}
         <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-4">
           {mediaSources.map((thumbUrl, idx) => (
-            <div 
-              key={idx} 
+            <div
+              key={idx}
               onClick={() => {
                 setSelectedMedia(thumbUrl);
                 openLightboxForSource(thumbUrl);
               }}
-              className={`aspect-square border-2 border-on-background relative cursor-pointer transition-colors ${
-                activeMedia === thumbUrl ? "border-primary" : "hover:border-primary"
-              }`}
+              className={`aspect-square border-2 border-on-background relative cursor-pointer transition-colors ${activeMedia === thumbUrl ? "border-primary" : "hover:border-primary"
+                }`}
             >
               {isVideoSource(thumbUrl) ? (
                 <video
                   src={thumbUrl}
-                  className={`w-full h-full object-cover transition-all ${
-                    activeMedia === thumbUrl ? "" : "grayscale hover:grayscale-0"
-                  }`}
+                  className={`w-full h-full object-cover transition-all ${activeMedia === thumbUrl ? "" : "grayscale hover:grayscale-0"
+                    }`}
                   muted
                   playsInline
                 />
               ) : (
-                <img 
-                  alt={`Thumbnail ${idx + 1}`} 
-                  src={thumbUrl} 
-                  className={`w-full h-full object-cover transition-all ${
-                    activeMedia === thumbUrl ? "" : "grayscale hover:grayscale-0"
-                  }`} 
+                <img
+                  alt={`Thumbnail ${idx + 1}`}
+                  src={thumbUrl}
+                  className={`w-full h-full object-cover transition-all ${activeMedia === thumbUrl ? "" : "grayscale hover:grayscale-0"
+                    }`}
                 />
               )}
               {idx === 0 && (
@@ -212,16 +259,37 @@ export function ProductMedia({ videoUrl, thumbnailUrls, mediaKinds, description 
       </div>
 
       {mediaSources.length > 0 ? (
-        <FsLightbox
-          toggler={lightboxToggler}
-          sources={mediaSources}
-          slide={lightboxSlide}
+        <Lightbox
+          open={open}
+          close={() => setOpen(false)}
+          index={index}
+          slides={mediaSources.map((src) => {
+            if (isVideoSource(src)) {
+              return {
+                type: "video",
+                width: 1280,
+                height: 720,
+                sources: [
+                  {
+                    src,
+                    type: "video/mp4",
+                  },
+                ],
+              } as any;
+            }
+
+            return {
+              type: "image",
+              src,
+            } as any;
+          })}
+          plugins={[Video]}
         />
       ) : null}
 
       {/* Description Section */}
-      <div 
-        className="bg-surface-container p-8 comic-border border-secondary border-t-8 w-full custom-scrollbar relative" 
+      <div
+        className="bg-surface-container p-8 comic-border border-secondary border-t-8 w-full custom-scrollbar relative"
         style={{ height: '320px', overflowY: 'auto' }}
       >
         <h4 className="font-headline font-black text-sm uppercase mb-6 tracking-widest text-secondary flex items-center gap-2">
