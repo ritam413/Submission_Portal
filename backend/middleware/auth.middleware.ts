@@ -15,7 +15,7 @@ function getIpAddress(request: NextRequest): string {
   return request.headers.get("x-real-ip") || "0.0.0.0";
 }
 
-function getBearerToken(request: NextRequest): string | null {
+export function getBearerToken(request: NextRequest): string | null {
   const header = request.headers.get("authorization");
   if (!header) {
     return null;
@@ -27,7 +27,7 @@ function getBearerToken(request: NextRequest): string | null {
   return token;
 }
 
-async function resolveAccountFromToken(token: string) {
+export async function resolveAccountFromToken(token: string) {
   try {
     const jwtAccount = createSessionAccount(token);
     return await jwtAccount.get();

@@ -417,7 +417,7 @@ export async function getByIdOrSlug(projectIdOrSlug: string) {
   };
 }
 
-async function findTeamProject(teamId: string): Promise<ProjectRecord | null> {
+export async function findTeamProject(teamId: string): Promise<ProjectRecord | null> {
   const { databases } = createAdminServices();
   const databaseId = appwriteCollectionIds.databaseId();
   const projectsCollection = appwriteCollectionIds.projects();
